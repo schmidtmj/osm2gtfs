@@ -1,0 +1,35 @@
+{
+    "query": {
+      "bbox": {
+          "n": "5.7844",
+          "s": "5.4783",
+          "e": "0.0611",
+          "w": "-0.4779"
+      },
+        "tags": {
+            "route": "bus"                    }
+    },
+    "stops": {
+        "name_without": "Unknown",
+        "name_auto": "yes"
+    },
+    "agency": {
+        "agency_id": "AM3",
+        "agency_name": "Accra Tro tro",
+        "agency_url": "https://ama.gov.gh/welcome/transport/",
+        "agency_timezone": "Africa/Accra",
+        "agency_lang": "en",
+        "agency_phone": "",
+        "agency_fare_url": ""
+    },
+    "feed_info": {
+        "publisher_name": "Jungle Bus",
+        "publisher_url": "http://junglebus.io",
+        "version": "0.1",
+        "start_date": "20190101",
+        "end_date": "20190601"
+    },
+    "output_file": "../osm2gtfs-prep/gh-accra.zip",
+    "selector": "gh_accra2",
+    "schedule_source": "../osm2gtfs-prep/timetable.json"
+}

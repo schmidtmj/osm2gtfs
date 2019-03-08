@@ -23,7 +23,7 @@ parser.add_argument('--config', '-c', metavar='FILE',
                     type=argparse.FileType('r'), help='Configuration file')
 parser.add_argument('--output', '-o', metavar='FILENAME',
                     type=str, help='Specify GTFS output zip file')
-parser.add_argument('--export', '-e', metavar='EXPORTNAME',
+parser.add_argument('--export-data', '-e', metavar='EXPORTNAME',
                     type=str, help='Export OSM transit data')
 # Refresh caching arguments
 group = parser.add_mutually_exclusive_group()
