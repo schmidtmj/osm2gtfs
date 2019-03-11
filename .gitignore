@@ -5,6 +5,8 @@
 ./config.json
 data
 src
+build
+dist
 
 # Android Studio files
 .idea/*
