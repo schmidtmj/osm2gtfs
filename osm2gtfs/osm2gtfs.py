@@ -64,7 +64,7 @@ def main():
         config.get_schedule_source(refresh=True)
 
     # If  argument selcted then output data for timetable generation
-    if args.export_data is not None:
+    if args.export is not None:
         data.get_routes()
         data.get_stops()
         data.export_data(args.export_data)

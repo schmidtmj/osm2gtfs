@@ -5,6 +5,7 @@ import sys
 import logging
 import json
 import datetime
+import importlib
 from urllib2 import urlopen
 from calendar import monthrange
 from osm2gtfs.core.cache import Cache
@@ -46,42 +47,66 @@ class Configuration(object):
         :return schedule_source: The schedule read from a file.
 
         """
+        cached_file = self.data['selector'] + '-schedule'
 
-        if 'schedule_source' not in self.data:
-            return None
+        if 'schedule_script' and 'schedule_csv' in self.data:
+
+            logging.info("Generating schedule using frequencies and script given in config file.")
+
+            schedule_script = self.data['schedule_script']
+            schedule_csv = self.data['schedule_csv']
+            header_data = {"start_date": self.data['feed_info']['start_date'],
+                           "end_date": self.data['feed_info']['end_date'],
+                           "included_lines": [],
+                           "excluded_lines": []}
+
+            script_dir = os.path.dirname(schedule_script)
+            script_name = os.path.splitext(os.path.basename(schedule_script))[0]
+            sys.path.insert(0, script_dir)
+            gt = importlib.import_module(script_name)
+            schedule_json = gt.generate_json(gt.load_csv(schedule_csv), header_data)
+
+            if 'schedule_source' in self.data:
+                logging.info("Writing schedule to {}.".format(self.data['schedule_source']))
+                gt.write_json(schedule_json, self.data['schedule_source'])
+                schedule_source = json.dumps(schedule_json)
+            else:
+                schedule_source = json.dumps(schedule_json)
 
         else:
-            source_file = self.data['schedule_source']
-            cached_file = self.data['selector'] + '-schedule'
-
-            # Preferably return cached data about schedule
-            if refresh is False:
-                # Check if _schedule_source data is already present
-                if not self._schedule_source:
-                    # If not, try to get _schedule_source from file cache
-                    self._schedule_source = Cache.read_file(cached_file)
-                # Return cached data if found
-                if bool(self._schedule_source):
-                    return self._schedule_source
-
-            # No cached data was found or refresh was forced
-            logging.info("Load schedule source information from %s", source_file)
-
-            # Check if local file exists
-            if os.path.isfile(source_file):
-
-                # Open file and add to config object
-                with open(source_file, 'r') as f:
-                    schedule_source = f.read()
-
+            if 'schedule_source' not in self.data:
+                return None
             else:
-                # Check if it is a valid url
-                try:
-                    schedule_source_file = urlopen(source_file)
-                except ValueError:
-                    logging.error("Couldn't find schedule_source file.")
-                    sys.exit(0)
-                schedule_source = schedule_source_file.read()
+                source_file = self.data['schedule_source']
+
+                # Preferably return cached data about schedule
+                if refresh is False:
+                    # Check if _schedule_source data is already present
+                    if not self._schedule_source:
+                        # If not, try to get _schedule_source from file cache
+                        self._schedule_source = Cache.read_file(cached_file)
+                    # Return cached data if found
+                    if bool(self._schedule_source):
+                        return self._schedule_source
+
+                # No cached data was found or refresh was forced
+                logging.info("Load schedule source information from %s", source_file)
+
+                # Check if local file exists
+                if os.path.isfile(source_file):
+
+                    # Open file and add to config object
+                    with open(source_file, 'r') as f:
+                        schedule_source = f.read()
+
+                else:
+                    # Check if it is a valid url
+                    try:
+                        schedule_source_file = urlopen(source_file)
+                    except ValueError:
+                        logging.error("Couldn't find schedule_source file.")
+                        sys.exit(0)
+                    schedule_source = schedule_source_file.read()
 
         self._schedule_source = schedule_source
 

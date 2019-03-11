@@ -27,9 +27,11 @@
         "publisher_url": "http://junglebus.io",
         "version": "0.1",
         "start_date": "20190101",
-        "end_date": "20190601"
+        "end_date": "20220101"
     },
     "output_file": "../osm2gtfs-prep/gh-accra.zip",
     "selector": "gh_accra2",
+    "schedule_script": "../osm2gtfs-prep/generate_timetable.py",
+    "schedule_csv": "../osm2gtfs-prep/frequency.csv",
     "schedule_source": "../osm2gtfs-prep/timetable.json"
 }
